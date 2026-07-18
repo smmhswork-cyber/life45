@@ -55,7 +55,7 @@ export default function JournalPage() {
           />
           <Button onClick={seed}>
             <NotebookPen size={16} strokeWidth={2} />
-            Seed today's entry
+            Seed today’s entry
           </Button>
         </>
       ) : (

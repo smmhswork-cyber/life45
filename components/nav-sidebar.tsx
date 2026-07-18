@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BookOpen,
   CalendarDays,
   CheckSquare,
   Home,
   LineChart,
   NotebookPen,
-  Target,
+  Settings as SettingsIcon,
   Sparkles,
+  Target,
 } from "lucide-react";
 
+import { UserMenu } from "@/components/auth/user-menu";
 import { cn } from "@/lib/utils";
 import { MODULES, MODULE_META, type ModuleId } from "@/lib/types";
 
@@ -31,6 +34,10 @@ const MODULE_NAV: NavItem[] = MODULES.map((m: ModuleId) => ({
   icon: iconFor(m),
 }));
 
+const SECONDARY: NavItem[] = [
+  { href: "/settings", label: "Settings", icon: SettingsIcon },
+];
+
 function iconFor(m: ModuleId) {
   switch (m) {
     case "tasks":
@@ -43,6 +50,8 @@ function iconFor(m: ModuleId) {
       return NotebookPen;
     case "calendar":
       return CalendarDays;
+    case "assignments":
+      return BookOpen;
   }
 }
 
@@ -71,13 +80,13 @@ export function NavSidebar() {
           </p>
           <NavGroup items={MODULE_NAV} pathname={pathname} />
         </div>
+        <div>
+          <NavGroup items={SECONDARY} pathname={pathname} />
+        </div>
       </nav>
 
-      <div className="m-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-muted)]/60 p-4">
-        <p className="text-xs font-medium">Local-first</p>
-        <p className="mt-1 text-[11px] text-[var(--color-muted-foreground)] leading-relaxed">
-          Your data lives in your browser. Nothing leaves this device.
-        </p>
+      <div className="px-3 pb-4">
+        <UserMenu />
       </div>
     </aside>
   );

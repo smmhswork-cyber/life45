@@ -1,32 +1,35 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { safeStorage } from "@/lib/storage";
 
 /**
  * useLocalStorage — SSR-safe persisted state.
- * - On the server, returns the initial value.
- * - On mount, hydrates from localStorage.
- * - Writes every change back to localStorage.
+ * - On the server, returns the initial value and `isHydrated === false`.
+ * - On mount, hydrates from localStorage and flips `isHydrated` to true.
+ * - Only persists *after* hydration so the initial paint cannot overwrite
+ *   stored data on a hot reload.
+ *
+ * Return tuple: [value, setValue, isHydrated, reset]
  */
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [value, setValue] = useState<T>(initialValue);
-  const hydrated = useRef(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Hydrate from storage on mount
+  // Hydrate from storage on mount.
   useEffect(() => {
     const stored = safeStorage.get<T>(key);
     if (stored !== null) setValue(stored);
-    hydrated.current = true;
+    setIsHydrated(true);
   }, [key]);
 
-  // Persist on change, skip the first render until we've hydrated
+  // Persist on change — only after hydration completes.
   useEffect(() => {
-    if (!hydrated.current) return;
+    if (!isHydrated) return;
     safeStorage.set(key, value);
-  }, [key, value]);
+  }, [key, value, isHydrated]);
 
   const reset = useCallback(() => setValue(initialValue), [initialValue]);
 
-  return [value, setValue, reset] as const;
+  return [value, setValue, isHydrated, reset] as const;
 }

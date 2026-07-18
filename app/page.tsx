@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { ArrowUpRight, Calendar, Compass } from "lucide-react";
+import { ArrowUpRight, Calendar, Compass, Settings as SettingsIcon } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MODULES, MODULE_META } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import * as Icons from "lucide-react";
+import { HabitStreakWidget } from "@/app/_components/habit-streak-widget";
 
 const QUOTES = [
   "Discipline is choosing between what you want now and what you want most.",
@@ -33,8 +34,8 @@ export default function HomePage() {
             few things that matter.
           </h1>
           <p className="text-[var(--color-muted-foreground)] text-base leading-relaxed max-w-xl">
-            Life45 is a calm, local-first workspace for your tasks, habits, goals, journal, and calendar.
-            Pick a module to get started.
+            Life45 is a calm, local-first workspace for your tasks, habits, goals, journal, calendar,
+            and class-period-tagged assignments. Pick a module to get started.
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Button asChild size="lg">
@@ -49,8 +50,34 @@ export default function HomePage() {
                 Reflect today
               </Link>
             </Button>
+            <Button asChild variant="ghost" size="lg">
+              <Link href="/settings">
+                <SettingsIcon size={16} strokeWidth={1.75} />
+                Settings
+              </Link>
+            </Button>
           </div>
         </div>
+      </section>
+
+      {/* Today at a glance */}
+      <section className="grid gap-4 sm:grid-cols-[1fr_minmax(0,_360px)] items-stretch">
+        <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-card)] p-6 sm:p-8 flex flex-col justify-center">
+          <span className="text-[11px] font-medium tracking-[0.18em] uppercase text-[var(--color-muted-foreground)] mb-2">
+            Today at a glance
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-snug">
+            One line for each thing
+            <br />
+            that moves you forward.
+          </h2>
+          <p className="text-sm text-[var(--color-muted-foreground)] leading-relaxed mt-3 max-w-md">
+            Add tasks, mark off habits, jot a thought — everything stays in
+            this browser. Spend five minutes here in the morning and you’re
+            set for the day.
+          </p>
+        </div>
+        <HabitStreakWidget />
       </section>
 
       {/* Module grid */}
@@ -59,7 +86,8 @@ export default function HomePage() {
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">Modules</h2>
             <p className="text-sm text-[var(--color-muted-foreground)] mt-1">
-              Each module has its own workspace and storage key.
+              Each module has its own workspace and storage key. Your data lives
+              only in this browser.
             </p>
           </div>
           <span className="text-[11px] font-medium tracking-[0.18em] uppercase text-[var(--color-muted-foreground)]">
@@ -69,7 +97,6 @@ export default function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {MODULES.map((id) => {
             const meta = MODULE_META[id];
-            // Resolve icon by name from lucide-react
             const Icon = (Icons as unknown as Record<string, typeof Icons.Sparkles>)[
               iconNameFor(id)
             ];
@@ -128,5 +155,7 @@ function iconNameFor(id: keyof typeof MODULE_META): string {
       return "NotebookPen";
     case "calendar":
       return "CalendarDays";
+    case "assignments":
+      return "BookOpen";
   }
 }
